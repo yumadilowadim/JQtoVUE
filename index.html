@@ -172,7 +172,7 @@
             </td>
 
             <td>
-              Invoice #: <input type="text" class="clear_text" value="123" /><br>Created: <input type="text" class="clear_text" v-model="datecreated" /><br>
+              {{ labels[language].invoice }} #: <input type="text" class="clear_text" value="123" /><br>{{ labels[language].created }}: <input type="text" class="clear_text" v-model="datecreated" /><br>
             </td>
           </tr>
         </table>
@@ -197,17 +197,17 @@
 
     <tr class="heading">
       <td colspan="3">
-        Payment Method
+	  {{ labels[language].paymentmethod }}
       </td>
 
       <td>
-        Check #
+        {{ labels[language].check }} #
       </td>
     </tr>
 
     <tr class="details">
       <td colspan="3">
-        Check
+        {{ labels[language].check }}
       </td>
 
       <td>
@@ -217,39 +217,40 @@
 
     <tr class="heading">
       <td>
-        Item
+        {{ labels[language].item }}
       </td>
 
       <td>
-        Unit Cost
+        {{ labels[language].unitcost }}
       </td>
 
       <td>
-        Quantity
+        {{ labels[language].quantity }}
       </td>
 
       <td>
-        Price
+        {{ labels[language].price }}
       </td>
     </tr>
 	<tr class="item" v-for="(item,n) in items">
 		<td><input v-model="item.description" placeholder="Enter position name" /></td>
 		<td><input type="number" v-model="item.price" v-bind="modprice(n)" /></td>
 		<td><input type="number" v-model="item.quantity" v-bind="modquantity(n)" min="1" /></td>
-		<td class="pre-total">${{ item.price * item.quantity }} <button type="button" v-if="n > 3" class="btn-remove-row" v-on:click="removeRow(n)">x</button></td>
+		<td class="pre-total">{{ labels[language].money }}{{ item.price * item.quantity }} <button type="button" v-if="n > 3" class="btn-remove-row" v-on:click="removeRow(n)">x</button></td>
 	</tr>
 
     <tr>
       <td colspan="4">
-        <button type="button" class="btn-add-row" v-on:click="addRow">Add row</button>&nbsp;
-		<button type="button" class="alt" v-on:click="printCheck">Print</button>
+        <button type="button" class="btn-add-row" v-on:click="addRow">{{ labels[language].addrow }}</button>&nbsp;
+		<button type="button" class="alt" v-on:click="printCheck">{{ labels[language].print }}</button>&nbsp;
+		<select v-model="language"><option v-for="(label,m) in labels" v-bind:value="m">{{ label.namelg }}</option></select>
       </td>
     </tr>
 
     <tr class="total">
       <td colspan="3"></td>
 
-      <td>Total: ${{ total | currency }}<br/>
+      <td>{{ labels[language].total }}: {{ labels[language].money }}{{ total | currency }}<br/>
 	  </td>
     </tr>
   </table>
@@ -268,10 +269,42 @@ const app = new Vue({
     items: [
       { description: 'Milk', quantity: 1, price: 2 },
       { description: 'Chocolate', quantity: 1, price: 1.5 },
-      { description: 'Water', quantity: 1, price: 0.5 },
       { description: 'Cheese', quantity: 1, price: 3 }	  
     ],
+	labels: [
+	{
+				namelg: 'en',
+				invoice: 'Invoice',
+				created: 'Created',
+				paymentmethod: 'Payment Method',
+				check: 'Check',
+				item: 'Item',
+				unitcost: 'Unit Cost',
+				quantity: 'Quantity',
+				price: 'Price',
+				addrow: 'Add row',
+				print: 'Print',
+				total: 'Total',
+				money: '$'
+	},	
+	{
+				namelg: 'ru',
+				invoice: 'Счет',
+				created: 'Создан',
+				paymentmethod: 'Метод платежа',
+				check: 'Наличные',
+				item: 'Наименование',
+				unitcost: 'Цена за шт.',
+				quantity: 'Количество',
+				price: 'Сумма',
+				addrow: 'Добавить позицию',
+				print: 'Печать',
+				total: 'Сумма',
+				money: ''
+	}
+	],
 	checknum: 1000,
+	language: 0,
 	datecreated: date_today
 	},
 	// methods
@@ -285,6 +318,13 @@ const app = new Vue({
 	removeRow(n) {
 		this.items.splice(n, 1);
 	},
+	changeLanguage() {
+	if (this.language == "en") {
+		this.language = "ru";
+	} else {
+		this.language = "en";
+	}
+	},	
 	modquantity(n) {
 	if (this.items[n].quantity < 0) {
 		this.items[n].quantity = 1;
