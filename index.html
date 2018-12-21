@@ -1,0 +1,354 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>JQtoVUE</title>
+    <!--script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script-->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <style>
+	h5 {
+		margin:0;
+		padding:0;
+	}
+	input {
+		cursor:pointer;
+		background:#fff;
+		border:1px solid #ccc;
+		padding:10px;
+	}
+	button {
+		cursor:pointer;
+		padding:10px;
+		background:#fff;
+		font-weight:bold;
+		border:2px solid #222;
+		transition:0.4s all;
+	}
+	button.alt, button:hover, button:focus, button:active {
+		transition:0.4s all;
+		background:#222;
+		color:#fff;
+		border:2px solid #222;
+	}
+	button.alt:hover,button.alt:active,button.alt:focus {
+		background:#000;
+	}
+	.btn-remove-row,.btn-remove-row:hover,.btn-remove-row:focus,.btn-remove-row:active {
+		background:transparent;
+		border:none;
+		color:#222;
+	}
+    .invoice-box {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+        font-size: 16px;
+        line-height: 24px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #555;
+    }
+
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+    }
+    
+    .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+    }
+    
+    .invoice-box table tr td:nth-child(2) {
+        text-align: right;
+    }
+    
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+		text-align: left;
+    }
+    
+    .invoice-box table tr.top table td.title {
+        font-size: 45px;
+        line-height: 45px;
+        color: #333;
+    }
+    
+    .invoice-box table tr.information table td {
+        padding-bottom: 40px;
+    }
+    
+    .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+    }
+    
+    .invoice-box table tr.details td {
+        padding-bottom: 20px;
+    }
+    
+    .invoice-box table tr.item td{
+        border-bottom: 1px solid #eee;
+    }
+    
+    .invoice-box table tr.item.last td {
+        border-bottom: none;
+    }
+    
+    .invoice-box table tr.total td:nth-child(2) {
+        border-top: 2px solid #eee;
+        font-weight: bold;
+    }
+    
+	.clear_text {
+		padding:0;
+		margin:0;
+		font-size:inherit;
+		border:none;
+		outline:none;
+		background:none;
+	}
+	.pre-total {
+		text-align:right;
+	}
+	
+	.details .clear_text, .item span {
+		text-align:right;
+	}
+	
+	@media print {
+		button {
+		display:none;
+		}
+		.invoice-box, .invoice-box input {
+		box-shadow: none !important;
+		border: none !important;
+		}		
+	}
+	
+    @media only screen and (max-width: 600px) {
+        .invoice-box table tr.top table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+        
+        .invoice-box table tr.information table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+    }
+    
+    /** RTL **/
+    .rtl {
+        direction: rtl;
+        font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    }
+    
+    .rtl table {
+        text-align: right;
+    }
+    
+    .rtl table tr td:nth-child(2) {
+        text-align: left;
+    }
+    </style>
+</head>
+
+<body>
+<div class="invoice-box">
+<input type="hidden" name="total" v-model="total" />
+  <table cellpadding="0" cellspacing="0">
+    <tr class="top">
+      <td colspan="4">
+        <table>
+          <tr>
+            <td class="title">
+			<h5><input type="text" class="clear_text" value="JD Inc." /></h5>
+            </td>
+
+            <td>
+              Invoice #: <input type="text" class="clear_text" value="123" /><br>Created: <input type="text" class="clear_text" v-model="datecreated" /><br>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr class="information">
+      <td colspan="4">
+        <table>
+          <tr>
+            <td>
+              <input type="text" class="clear_text" value="12345 Green Street" /><br><input type="text" class="clear_text" value="Sunnyville, CA 12345" />
+            </td>
+
+            <td>
+              <input type="text" class="clear_text" value="John Doe" /><br><input type="text" class="clear_text" value="john@example.com" />
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr class="heading">
+      <td colspan="3">
+        Payment Method
+      </td>
+
+      <td>
+        Check #
+      </td>
+    </tr>
+
+    <tr class="details">
+      <td colspan="3">
+        Check
+      </td>
+
+      <td>
+        <input type="text" class="clear_text" v-model="checknum" />
+      </td>
+    </tr>
+
+    <tr class="heading">
+      <td>
+        Item
+      </td>
+
+      <td>
+        Unit Cost
+      </td>
+
+      <td>
+        Quantity
+      </td>
+
+      <td>
+        Price
+      </td>
+    </tr>
+	<tr class="item" v-for="(item,n) in items">
+		<td><input v-model="item.description" placeholder="Enter position name" /></td>
+		<td><input type="number" v-model="item.price" v-bind="modprice(n)" /></td>
+		<td><input type="number" v-model="item.quantity" v-bind="modquantity(n)" min="1" /></td>
+		<td class="pre-total">${{ item.price * item.quantity }} <button type="button" v-if="n > 3" class="btn-remove-row" v-on:click="removeRow(n)">x</button></td>
+	</tr>
+
+    <tr>
+      <td colspan="4">
+        <button type="button" class="btn-add-row" v-on:click="addRow">Add row</button>&nbsp;
+		<button type="button" class="alt" v-on:click="printCheck">Print</button>
+      </td>
+    </tr>
+
+    <tr class="total">
+      <td colspan="3"></td>
+
+      <td>Total: ${{ total | currency }}<br/>
+	  </td>
+    </tr>
+  </table>
+</div>
+
+
+<script>
+// used vue.js
+var date = new Date();
+var actual_month = date.getMonth() + 1;
+var date_today = date.getFullYear()+'.'+actual_month+'.'+date.getDate();
+
+const app = new Vue({
+  el: '.invoice-box',
+  data: {
+    items: [
+      { description: 'Milk', quantity: 1, price: 2 },
+      { description: 'Chocolate', quantity: 1, price: 1.5 },
+      { description: 'Water', quantity: 1, price: 0.5 },
+      { description: 'Cheese', quantity: 1, price: 3 }	  
+    ],
+	checknum: 1000,
+	datecreated: date_today
+	},
+	// methods
+	methods: {
+	printCheck() {
+		window.print()
+	},
+	addRow() {
+		this.items.push({ description: '', quantity: 1, price: 0 });
+	},
+	removeRow(n) {
+		this.items.splice(n, 1);
+	},
+	modquantity(n) {
+	if (this.items[n].quantity < 0) {
+		this.items[n].quantity = 1;
+	}
+	},
+	modprice(n) {
+	if (this.items[n].price < 0) {
+		this.items[n].price = 0.1;
+	}
+	}	
+	},
+	// computed
+    computed: {
+    total() {
+      return this.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    }
+	},
+	//filters
+	filters: {
+    currency(value) {
+      return value.toFixed(2);
+    }
+	}
+});
+
+
+</script>	
+
+<script>
+// used jq
+/*
+$('table').on('mouseup keyup', 'input[type=number]', calculateTotals);
+
+function calculateTotals()  {
+  const subtotals = $('.item').map((idx, val)  => calculateSubtotal(val)).get();
+  const total = subtotals.reduce((a, v)  => a + Number(v),  0);
+  $('.total td:eq(1)').text(formatAsCurrency(total));
+}
+
+function calculateSubtotal(row) {
+  const $row = $(row);
+  const inputs = $row.find('input');
+  const subtotal = inputs[1].value * inputs[2].value;
+  $row.find('td:last').text(formatAsCurrency(subtotal));
+  return subtotal;
+}
+
+function formatAsCurrency(amount) {
+  return `$${Number(amount).toFixed(2)}`;
+}
+
+$('.btn-add-row').on('click', () => {
+  const $lastRow = $('.item:last');
+  const $newRow = $lastRow.clone();
+
+  $newRow.find('input').val('');
+  $newRow.find('td:last').text('$0.00');
+  $newRow.insertAfter($lastRow);
+
+  $newRow.find('input:first').focus();
+});
+
+*/
+</script>
+	
+</body>
+</html>
