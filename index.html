@@ -10,7 +10,7 @@
 		margin:0;
 		padding:0;
 	}
-	input {
+	input, select {
 		cursor:pointer;
 		background:#fff;
 		border:1px solid #ccc;
@@ -120,7 +120,7 @@
 	}
 	
 	@media print {
-		button {
+		button, select {
 		display:none;
 		}
 		.invoice-box, .invoice-box input {
@@ -300,7 +300,7 @@ const app = new Vue({
 				addrow: 'Добавить позицию',
 				print: 'Печать',
 				total: 'Сумма',
-				money: ''
+				money: '' //₽
 	}
 	],
 	checknum: 1000,
